@@ -21,7 +21,9 @@ jobs:
       - run: npm run format
       - run: npm test -- --coverage
       - run: npm run build
-      - run: npx @vscode/vsce package --no-dependencies
+      - name: Package extension
+        if: matrix.node-version >= 20
+        run: npx @vscode/vsce@2.31.1 package --no-dependencies
       - uses: actions/upload-artifact@v4
         if: matrix.node-version == 22
         with:
