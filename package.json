@@ -6,6 +6,10 @@
   "publisher": "bhayanak",
   "license": "MIT",
   "icon": "logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhayanak/todo-to-issue-converter"
+  },
   "categories": [
     "Other",
     "SCM Providers"
@@ -169,9 +173,5 @@
     "prettier": "^3.2.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": ""
   }
 }

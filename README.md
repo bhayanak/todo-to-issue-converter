@@ -1,4 +1,8 @@
-# TODO to Issue — VS Code Extension
+<p align="center">
+  <img src="logo.png" alt="TODO to Issue — VS Code Extension" width="180" height="180"/>
+</p>
+
+<h1 align="center">TODO to Issue — VS Code Extension</h1>
 
 > Right-click a `TODO`, `FIXME`, `HACK`, or `BUG` comment in your code and instantly create a **Jira** or **GitHub Issue** — pre-populated with file context, line number, surrounding code snippet, and git blame info.
 
@@ -81,15 +85,6 @@ Credentials are stored in VS Code's encrypted SecretStorage. Never in `settings.
 | `BUG` | `bug` |
 | `XXX` | `needs-review` |
 
-## Development
-
-```bash
-npm install
-npm run build
-npm test
-npm run test:coverage
-```
-
 ## Requirements
 
 - VS Code 1.85+
@@ -98,4 +93,4 @@ npm run test:coverage
 
 ## License
 
-MIT
+[MIT](LICENSE)
