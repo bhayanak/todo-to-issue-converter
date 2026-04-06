@@ -1,0 +1,177 @@
+{
+  "name": "todo-to-issue",
+  "displayName": "TODO to Issue",
+  "description": "Right-click a TODO/FIXME/HACK/BUG comment to instantly create a Jira or GitHub Issue with file context, line number, code snippet, and git blame info.",
+  "version": "0.1.0",
+  "publisher": "bhayanak",
+  "license": "MIT",
+  "icon": "logo.png",
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "todo",
+    "fixme",
+    "jira",
+    "github",
+    "issue",
+    "tracker"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onLanguage:*"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "todoToIssue.createIssue",
+        "title": "TODO → Create Issue",
+        "category": "TODO to Issue"
+      },
+      {
+        "command": "todoToIssue.bulkScan",
+        "title": "TODO → Scan Workspace",
+        "category": "TODO to Issue"
+      },
+      {
+        "command": "todoToIssue.linkExisting",
+        "title": "TODO → Link Existing Issue",
+        "category": "TODO to Issue"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "todoToIssue.createIssue",
+          "when": "editorTextFocus",
+          "group": "todoToIssue@1"
+        },
+        {
+          "command": "todoToIssue.linkExisting",
+          "when": "editorTextFocus",
+          "group": "todoToIssue@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TODO to Issue",
+      "properties": {
+        "todoToIssue.provider": {
+          "type": "string",
+          "enum": [
+            "jira",
+            "github"
+          ],
+          "default": "jira",
+          "description": "Issue tracker provider",
+          "order": 1
+        },
+        "todoToIssue.jira.baseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Jira instance URL (e.g., https://mycompany.atlassian.net)",
+          "order": 2
+        },
+        "todoToIssue.jira.projectKey": {
+          "type": "string",
+          "default": "",
+          "description": "Default Jira project key (e.g., PROJ)",
+          "order": 3
+        },
+        "todoToIssue.jira.issueType": {
+          "type": "string",
+          "default": "Task",
+          "description": "Default Jira issue type",
+          "order": 4
+        },
+        "todoToIssue.github.owner": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub repository owner (auto-detected from git remote)",
+          "order": 5
+        },
+        "todoToIssue.github.repo": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub repository name (auto-detected from git remote)",
+          "order": 6
+        },
+        "todoToIssue.patterns": {
+          "type": "array",
+          "default": [
+            "TODO",
+            "FIXME",
+            "HACK",
+            "BUG",
+            "XXX"
+          ],
+          "description": "Comment patterns to detect as actionable TODOs",
+          "order": 7
+        },
+        "todoToIssue.contextLines": {
+          "type": "number",
+          "default": 5,
+          "description": "Number of surrounding code lines to include in issue body",
+          "order": 8
+        },
+        "todoToIssue.includeGitBlame": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include git blame information in issue body",
+          "order": 9
+        },
+        "todoToIssue.autoLabel": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically add labels based on TODO type (bug, enhancement, etc.)",
+          "order": 10
+        },
+        "todoToIssue.showCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens indicators above linked TODO comments",
+          "order": 11
+        },
+        "todoToIssue.duplicateDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check for duplicate issues before creating new ones",
+          "order": 12
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
+    "watch": "npm run build -- --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/ --max-warnings 0",
+    "format": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "package": "npx @vscode/vsce package --no-dependencies",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

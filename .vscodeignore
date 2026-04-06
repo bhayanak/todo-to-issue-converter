@@ -1,0 +1,14 @@
+.vscode-test/
+node_modules/
+.gitignore
+*.vsix
+src/
+test/
+tsconfig.json
+vitest.config.ts
+eslint.config.mjs
+.prettierrc
+.github/
+todo-to-issue-extension-plan.md
+CHANGE.md
+coverage/

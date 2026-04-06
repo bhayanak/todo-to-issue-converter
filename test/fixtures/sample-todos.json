@@ -1,0 +1,32 @@
+[
+  {
+    "type": "TODO",
+    "text": "Inject service via DI container",
+    "file": "fixtures/sample-file.ts",
+    "line": 8
+  },
+  {
+    "type": "FIXME",
+    "text": "Add proper input validation",
+    "file": "fixtures/sample-file.ts",
+    "line": 13
+  },
+  {
+    "type": "HACK",
+    "text": "Temporary workaround for API rate limiting",
+    "file": "fixtures/sample-file.ts",
+    "line": 18
+  },
+  {
+    "type": "BUG",
+    "text": "This doesn't cascade delete related records",
+    "file": "fixtures/sample-file.ts",
+    "line": 24
+  },
+  {
+    "type": "XXX",
+    "text": "This method needs complete rewrite",
+    "file": "fixtures/sample-file.ts",
+    "line": 28
+  }
+]
