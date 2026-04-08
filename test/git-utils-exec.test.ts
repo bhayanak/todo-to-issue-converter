@@ -158,3 +158,27 @@ describe('getGitCommitSha', () => {
     expect(result).toBeNull();
   });
 });
+
+describe('empty cwd guard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('getGitBranch should return null when cwd is empty', () => {
+    const result = getGitBranch('');
+    expect(result).toBeNull();
+    expect(mockExecSync).not.toHaveBeenCalled();
+  });
+
+  it('getGitRemoteUrl should return null when cwd is empty', () => {
+    const result = getGitRemoteUrl('');
+    expect(result).toBeNull();
+    expect(mockExecSync).not.toHaveBeenCalled();
+  });
+
+  it('getGitCommitSha should return null when cwd is empty', () => {
+    const result = getGitCommitSha('');
+    expect(result).toBeNull();
+    expect(mockExecSync).not.toHaveBeenCalled();
+  });
+});

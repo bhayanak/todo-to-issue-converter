@@ -2,7 +2,7 @@
   "name": "todo-to-issue",
   "displayName": "TODO to Issue",
   "description": "Right-click a TODO/FIXME/HACK/BUG comment to instantly create a Jira or GitHub Issue with file context, line number, code snippet, and git blame info.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "bhayanak",
   "license": "MIT",
   "icon": "logo.png",
@@ -41,6 +41,16 @@
       {
         "command": "todoToIssue.linkExisting",
         "title": "TODO → Link Existing Issue",
+        "category": "TODO to Issue"
+      },
+      {
+        "command": "todoToIssue.configureJira",
+        "title": "Configure Jira Credentials",
+        "category": "TODO to Issue"
+      },
+      {
+        "command": "todoToIssue.configureGitHub",
+        "title": "Configure GitHub Token",
         "category": "TODO to Issue"
       }
     ],

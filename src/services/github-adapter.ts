@@ -3,6 +3,7 @@ import { TodoContext } from '../models/todo-item';
 import { IssueAdapter, IssueCreateResult } from '../models/issue-config';
 import { renderTemplate, buildTitle } from './template-engine';
 import { getConfig, getLabelForTodoType } from '../utils/config';
+import { getGitRemoteUrl, parseOwnerRepoFromUrl } from '../utils/git-utils';
 
 export class GitHubAdapter implements IssueAdapter {
   private owner: string;
@@ -11,8 +12,24 @@ export class GitHubAdapter implements IssueAdapter {
 
   constructor(secretStorage: vscode.SecretStorage) {
     const config = getConfig();
-    this.owner = config.github.owner;
-    this.repo = config.github.repo;
+    let owner = config.github.owner;
+    let repo = config.github.repo;
+
+    // Auto-detect from git remote if not configured
+    if (!owner || !repo) {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+      const remoteUrl = getGitRemoteUrl(workspaceFolder);
+      if (remoteUrl) {
+        const parsed = parseOwnerRepoFromUrl(remoteUrl);
+        if (parsed) {
+          owner = owner || parsed.owner;
+          repo = repo || parsed.repo;
+        }
+      }
+    }
+
+    this.owner = owner;
+    this.repo = repo;
     this.secretStorage = secretStorage;
   }
 

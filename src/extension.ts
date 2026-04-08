@@ -10,9 +10,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Register commands
   context.subscriptions.push(
-    vscode.commands.registerCommand('todoToIssue.createIssue', (lineNumber?: number) =>
-      createIssueCommand(secretStorage, lineNumber),
-    ),
+    vscode.commands.registerCommand('todoToIssue.createIssue', (arg?: unknown) => {
+      // When invoked from context menu, arg is a URI — ignore it.
+      // When invoked from CodeLens, arg is a line number.
+      const lineNumber = typeof arg === 'number' ? arg : undefined;
+      return createIssueCommand(secretStorage, lineNumber);
+    }),
   );
 
   context.subscriptions.push(
