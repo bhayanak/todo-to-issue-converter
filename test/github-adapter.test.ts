@@ -236,4 +236,37 @@ describe('GitHubAdapter', () => {
       await expect(adapter.getIssueStatus('#999')).rejects.toThrow('GitHub API error (404)');
     });
   });
+
+  describe('validateToken', () => {
+    it('should return valid for good token', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ login: 'testuser' }),
+      });
+
+      const result = await GitHubAdapter.validateToken('ghp_good_token');
+      expect(result.valid).toBe(true);
+      expect(result.message).toContain('testuser');
+    });
+
+    it('should return invalid for bad token', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        text: async () => 'Bad credentials',
+      });
+
+      const result = await GitHubAdapter.validateToken('ghp_bad_token');
+      expect(result.valid).toBe(false);
+      expect(result.message).toContain('401');
+    });
+
+    it('should handle network errors', async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+
+      const result = await GitHubAdapter.validateToken('ghp_any');
+      expect(result.valid).toBe(false);
+      expect(result.message).toContain('Connection failed');
+    });
+  });
 });

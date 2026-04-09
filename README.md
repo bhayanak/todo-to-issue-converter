@@ -4,7 +4,20 @@
 
 <h1 align="center">TODO to Issue — VS Code Extension</h1>
 
-> Right-click a `TODO`, `FIXME`, `HACK`, or `BUG` comment in your code and instantly create a **Jira** or **GitHub Issue** — pre-populated with file context, line number, surrounding code snippet, and git blame info.
+<p align="center">
+  <a href="https://github.com/bhayanak/todo-to-issue-converter/actions/workflows/ci.yml"><img src="https://github.com/bhayanak/todo-to-issue-converter/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/bhayanak/todo-to-issue-converter/releases/latest"><img src="https://img.shields.io/github/v/release/bhayanak/todo-to-issue-converter?label=release" alt="GitHub Release"></a>
+  <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node.js">
+  <img src="https://img.shields.io/badge/vscode-%3E%3D1.85-blue" alt="VS Code">
+  <a href="https://github.com/bhayanak/todo-to-issue-converter/blob/main/LICENSE.txt"><img src="https://img.shields.io/github/license/bhayanak/todo-to-issue-converter" alt="License"></a>
+  <img src="https://img.shields.io/badge/coverage-96%25-brightgreen" alt="Coverage">
+</p>
+
+<p align="center">
+  Right-click a <code>TODO</code>, <code>FIXME</code>, <code>HACK</code>, or <code>BUG</code> comment in your code and instantly create a <strong>Jira</strong> or <strong>GitHub Issue</strong> — pre-populated with file context, line number, surrounding code snippet, and git blame info.
+</p>
+
+---
 
 ## Features
 
@@ -20,15 +33,7 @@
 
 ## Setup
 
-### 1. Install the Extension
-
-Install from the VS Code Marketplace, or manually via `.vsix`:
-
-```bash
-code --install-extension todo-to-issue-0.1.0.vsix
-```
-
-### 2. Configure Provider
+### Configure Provider
 
 Open VS Code Settings (`Cmd+,`) and search for **"TODO to Issue"**:
 
@@ -47,7 +52,7 @@ Open VS Code Settings (`Cmd+,`) and search for **"TODO to Issue"**:
 | `todoToIssue.showCodeLens` | Show CodeLens above TODOs | `true` |
 | `todoToIssue.duplicateDetection` | Check duplicates before creating | `true` |
 
-### 3. Store Credentials Securely
+### Store Credentials Securely
 
 Use the Command Palette (`Cmd+Shift+P`):
 
@@ -85,12 +90,42 @@ Credentials are stored in VS Code's encrypted SecretStorage. Never in `settings.
 | `BUG` | `bug` |
 | `XXX` | `needs-review` |
 
+## Installation
+
+### From GitHub Releases
+
+Download the latest `.vsix` from [Releases](https://github.com/bhayanak/todo-to-issue-converter/releases/latest) and install:
+
+```bash
+code --install-extension todo-to-issue-*.vsix
+```
+
+### From Source
+
+```bash
+git clone https://github.com/bhayanak/todo-to-issue-converter.git
+cd todo-to-issue-converter
+npm ci && npm run build
+npx @vscode/vsce package --no-dependencies
+code --install-extension todo-to-issue-*.vsix
+```
+
 ## Requirements
 
 - VS Code 1.85+
 - Node.js 18+
 - Git (for blame info)
 
+## Contributing
+
+PRs welcome! Run the test suite before submitting:
+
+```bash
+npm ci
+npm test -- --coverage
+npm run lint
+```
+
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE.txt)

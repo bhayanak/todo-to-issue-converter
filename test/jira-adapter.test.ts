@@ -192,4 +192,68 @@ describe('JiraAdapter', () => {
       await expect(adapter.getIssueStatus('TEST-999')).rejects.toThrow('Jira API error (404)');
     });
   });
+
+  describe('validateCredentials', () => {
+    it('should return valid for good credentials', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ displayName: 'Test User' }),
+      });
+
+      const result = await JiraAdapter.validateCredentials(
+        'https://test.atlassian.net',
+        'user@test.com',
+        'token123',
+      );
+      expect(result.valid).toBe(true);
+      expect(result.message).toContain('Test User');
+
+      const [url] = (global.fetch as any).mock.calls[0];
+      expect(url).toBe('https://test.atlassian.net/rest/api/3/myself');
+    });
+
+    it('should return invalid for bad credentials', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        text: async () => 'Unauthorized',
+      });
+
+      const result = await JiraAdapter.validateCredentials(
+        'https://test.atlassian.net',
+        'bad@test.com',
+        'badtoken',
+      );
+      expect(result.valid).toBe(false);
+      expect(result.message).toContain('401');
+    });
+
+    it('should handle network errors', async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error('ENOTFOUND'));
+
+      const result = await JiraAdapter.validateCredentials(
+        'https://unreachable.example.com',
+        'user@test.com',
+        'token',
+      );
+      expect(result.valid).toBe(false);
+      expect(result.message).toContain('Connection failed');
+    });
+
+    it('should strip trailing slashes from base URL', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ displayName: 'User' }),
+      });
+
+      await JiraAdapter.validateCredentials(
+        'https://test.atlassian.net///',
+        'user@test.com',
+        'token',
+      );
+
+      const [url] = (global.fetch as any).mock.calls[0];
+      expect(url).toBe('https://test.atlassian.net/rest/api/3/myself');
+    });
+  });
 });

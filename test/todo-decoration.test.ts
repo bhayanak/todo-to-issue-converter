@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { addLinkedTodo, getLinkedTodos, clearLinkedTodos } from '../src/providers/todo-decoration';
+import {
+  addLinkedTodo,
+  getLinkedTodos,
+  clearLinkedTodos,
+  initLinkStorage,
+} from '../src/providers/todo-decoration';
 
 describe('todo-decoration link tracking', () => {
   beforeEach(() => {
@@ -60,6 +65,48 @@ describe('todo-decoration link tracking', () => {
       clearLinkedTodos('/test/a.ts');
       expect(getLinkedTodos('/test/a.ts')).toEqual([]);
       expect(getLinkedTodos('/test/b.ts').length).toBe(1);
+    });
+  });
+
+  describe('initLinkStorage (persistence)', () => {
+    it('should restore links from workspace state', () => {
+      const stored = {
+        '/test/persisted.ts': [{ line: 5, issueKey: 'PROJ-99' }],
+      };
+      const mockState = {
+        get: vi.fn((_key: string, defaultValue: unknown) => stored),
+        update: vi.fn(async () => {}),
+      };
+      initLinkStorage(mockState as any);
+      const links = getLinkedTodos('/test/persisted.ts');
+      expect(links.length).toBe(1);
+      expect(links[0].issueKey).toBe('PROJ-99');
+      clearLinkedTodos('/test/persisted.ts');
+    });
+
+    it('should persist links when adding', () => {
+      const mockState = {
+        get: vi.fn((_key: string, defaultValue: unknown) => defaultValue),
+        update: vi.fn(async () => {}),
+      };
+      initLinkStorage(mockState as any);
+      addLinkedTodo('/test/persist-add.ts', 1, 'GH-10');
+      expect(mockState.update).toHaveBeenCalledWith(
+        'todoToIssue.linkedTodos',
+        expect.objectContaining({
+          '/test/persist-add.ts': [{ line: 1, issueKey: 'GH-10' }],
+        }),
+      );
+      clearLinkedTodos('/test/persist-add.ts');
+    });
+
+    it('should handle empty workspace state', () => {
+      const mockState = {
+        get: vi.fn((_key: string, defaultValue: unknown) => defaultValue),
+        update: vi.fn(async () => {}),
+      };
+      initLinkStorage(mockState as any);
+      expect(getLinkedTodos('/test/empty.ts')).toEqual([]);
     });
   });
 });

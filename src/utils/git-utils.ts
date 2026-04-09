@@ -98,7 +98,10 @@ export function parseOwnerRepoFromUrl(repoUrl: string): { owner: string; repo: s
   }
   try {
     const url = new URL(repoUrl);
-    const parts = url.pathname.replace(/^\//, '').replace(/\.git$/, '').split('/');
+    const parts = url.pathname
+      .replace(/^\//, '')
+      .replace(/\.git$/, '')
+      .split('/');
     if (parts.length >= 2) {
       return { owner: parts[parts.length - 2], repo: parts[parts.length - 1] };
     }

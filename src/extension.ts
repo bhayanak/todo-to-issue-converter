@@ -3,10 +3,20 @@ import { createIssueCommand } from './commands/create-issue';
 import { bulkScanCommand } from './commands/bulk-scan';
 import { linkExistingCommand } from './commands/link-existing';
 import { TodoCodeLensProvider } from './providers/todo-codelens';
-import { updateDecorations, disposeDecorations } from './providers/todo-decoration';
+import {
+  updateDecorations,
+  disposeDecorations,
+  initLinkStorage,
+} from './providers/todo-decoration';
+import { GitHubAdapter } from './services/github-adapter';
+import { JiraAdapter } from './services/jira-adapter';
+import { getConfig } from './utils/config';
 
 export function activate(context: vscode.ExtensionContext): void {
   const secretStorage = context.secrets;
+
+  // Restore persisted issue links
+  initLinkStorage(context.workspaceState);
 
   // Register commands
   context.subscriptions.push(
@@ -43,7 +53,29 @@ export function activate(context: vscode.ExtensionContext): void {
 
       await secretStorage.store('todoToIssue.jira.email', email);
       await secretStorage.store('todoToIssue.jira.apiToken', token);
-      vscode.window.showInformationMessage('Jira credentials saved securely.');
+
+      // Validate credentials
+      const config = getConfig();
+      if (config.jira.baseUrl) {
+        const result = await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: 'Validating Jira credentials...',
+          },
+          () => JiraAdapter.validateCredentials(config.jira.baseUrl, email, token),
+        );
+        if (result.valid) {
+          vscode.window.showInformationMessage(`Jira credentials saved. ${result.message}`);
+        } else {
+          vscode.window.showWarningMessage(
+            `Jira credentials saved but validation failed: ${result.message}. Check your email, token, and base URL.`,
+          );
+        }
+      } else {
+        vscode.window.showInformationMessage(
+          'Jira credentials saved. Configure todoToIssue.jira.baseUrl in settings to enable validation.',
+        );
+      }
     }),
   );
 
@@ -56,7 +88,19 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!token) return;
 
       await secretStorage.store('todoToIssue.github.token', token);
-      vscode.window.showInformationMessage('GitHub token saved securely.');
+
+      // Validate token
+      const result = await vscode.window.withProgress(
+        { location: vscode.ProgressLocation.Notification, title: 'Validating GitHub token...' },
+        () => GitHubAdapter.validateToken(token),
+      );
+      if (result.valid) {
+        vscode.window.showInformationMessage(`GitHub token saved. ${result.message}`);
+      } else {
+        vscode.window.showWarningMessage(
+          `GitHub token saved but validation failed: ${result.message}. Check your token has the correct scopes (repo).`,
+        );
+      }
     }),
   );
 

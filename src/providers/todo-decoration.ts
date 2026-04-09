@@ -8,6 +8,27 @@ interface TodoLink {
 }
 
 const linkedTodos: Map<string, TodoLink[]> = new Map();
+let workspaceState: vscode.Memento | null = null;
+
+const STORAGE_KEY = 'todoToIssue.linkedTodos';
+
+export function initLinkStorage(state: vscode.Memento): void {
+  workspaceState = state;
+  // Restore persisted links
+  const stored = state.get<Record<string, TodoLink[]>>(STORAGE_KEY, {});
+  for (const [filePath, links] of Object.entries(stored)) {
+    linkedTodos.set(filePath, links);
+  }
+}
+
+function persistLinks(): void {
+  if (!workspaceState) return;
+  const obj: Record<string, TodoLink[]> = {};
+  for (const [filePath, links] of linkedTodos.entries()) {
+    obj[filePath] = links;
+  }
+  workspaceState.update(STORAGE_KEY, obj);
+}
 
 export function addLinkedTodo(filePath: string, line: number, issueKey: string): void {
   const links = linkedTodos.get(filePath) || [];
@@ -18,6 +39,7 @@ export function addLinkedTodo(filePath: string, line: number, issueKey: string):
     links.push({ line, issueKey });
   }
   linkedTodos.set(filePath, links);
+  persistLinks();
 }
 
 export function getLinkedTodos(filePath: string): TodoLink[] {

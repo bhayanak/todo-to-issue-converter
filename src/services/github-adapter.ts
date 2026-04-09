@@ -129,4 +129,27 @@ export class GitHubAdapter implements IssueAdapter {
     const data = (await response.json()) as { state: string };
     return data.state;
   }
+
+  static async validateToken(token: string): Promise<{ valid: boolean; message: string }> {
+    try {
+      const response = await fetch('https://api.github.com/user', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github.v3+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      });
+      if (response.ok) {
+        const data = (await response.json()) as { login: string };
+        return { valid: true, message: `Authenticated as ${data.login}` };
+      }
+      const errorBody = await response.text();
+      return { valid: false, message: `Authentication failed (${response.status}): ${errorBody}` };
+    } catch (error) {
+      return {
+        valid: false,
+        message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      };
+    }
+  }
 }

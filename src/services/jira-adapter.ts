@@ -127,4 +127,32 @@ export class JiraAdapter implements IssueAdapter {
     };
     return data.fields.status.name;
   }
+
+  static async validateCredentials(
+    baseUrl: string,
+    email: string,
+    token: string,
+  ): Promise<{ valid: boolean; message: string }> {
+    try {
+      const url = `${baseUrl.replace(/\/+$/, '')}/rest/api/3/myself`;
+      const authHeader = 'Basic ' + Buffer.from(`${email}:${token}`).toString('base64');
+      const response = await fetch(url, {
+        headers: {
+          Authorization: authHeader,
+          Accept: 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = (await response.json()) as { displayName: string };
+        return { valid: true, message: `Authenticated as ${data.displayName}` };
+      }
+      const errorBody = await response.text();
+      return { valid: false, message: `Authentication failed (${response.status}): ${errorBody}` };
+    } catch (error) {
+      return {
+        valid: false,
+        message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      };
+    }
+  }
 }
