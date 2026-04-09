@@ -8,3 +8,4 @@ coverage/
 *.tmp
 *.md
 !README.md
+!CHANGELOG.md
